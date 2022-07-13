@@ -19,7 +19,7 @@ void adminAddPatient();
 void adminAddDoctor();
 void doctorMenu();
 void doctorUpdatePatient();
-
+void searchPatient();
 
 // database global declaration
 sqlite3 *db;
@@ -27,6 +27,7 @@ char *errorMessage = 0;
 
 // database functions declaration
 static int callback(void*, int, char**, char**);
+static int searchCallback(void*, int, char**, char**);
 
 // class declaration
 class Patient;
@@ -240,13 +241,17 @@ void adminMenu(){
     switch(choice){
         case 1: {
             adminAddDoctor();
+            adminMenu();
             break;
         }
         case 2: {
             adminAddPatient();
+            adminMenu();
             break;
         }
         case 3: {
+            searchPatient();
+            adminMenu();
             break;
         }
         case 4: {
@@ -299,7 +304,7 @@ void adminAddPatient(){
 
     patient = new Patient( patientsMobileNumber, patientsAge, patientsFileName, patientsGender, patientsFirstName, patientsMiddleName, patientsLastName,patientsAddress, "", "", "", "");
     
-    patient-> insertPatient();
+    patient -> insertPatient();
 }
 
 void adminAddDoctor(){
@@ -362,9 +367,12 @@ void doctorMenu(){
     switch(choice){
         case 1: {
             doctorUpdatePatient();
+            doctorMenu();
             break;
         }
         case 2: {
+            searchPatient();
+            doctorMenu();
             break;
         }
         case 3: {
@@ -381,7 +389,7 @@ void doctorUpdatePatient(){
     string patientsCheckedBy;
     string patientsMedicines;
     string patientsFileName;
-    bool isFileFound;
+    bool isFileFound = false;
 
     string findPatientQuery = "SELECT pFileName FROM Patients";
 
@@ -429,7 +437,7 @@ void doctorUpdatePatient(){
 static int callback(void* data, int argc, char** argv, char** azColName)
 {
 	int i;
-	
+	fileName.clear();
 	for (i = 0; i < argc; i++) {
         if(argv[i]){
             fileName.push_back(argv[i]);
@@ -442,4 +450,59 @@ static int callback(void* data, int argc, char** argv, char** azColName)
 	return 0;
 }
 
+static int searchCallback(void *NotUsed, int argc, char **argv, char **azColName) {
+    int i;
+
+    system("clear");
+
+    cout << "Matched Search result: " << endl << endl;
+
+    string col[12] = {"File name", "First name", "Middle name", "Last name", "Mobile number", "Address", "Gender", "Age", "Blood group", "Symptoms", "Medicines", "Checked by"};
+    for(i = 0; i<argc; i++) {
+      cout << "\t" << col[i] << ": " << (argv[i] ? argv[i] : "NULL") << endl; 
+    }
+    printf("\n");
+    return 0;
+}
+
+
+void searchPatient(){
+
+    string patientsFileName;
+    bool isFileFound = false; 
+ 
+    cout << "Enter patient's file name: ";
+    cin >> patientsFileName;
+
+
+    string findPatientQuery = "SELECT * from Patients WHERE pFileName='" + patientsFileName + "'";
+
+    int rc = sqlite3_exec(db, findPatientQuery.c_str(), callback, 0, &errorMessage);
+
+    if(rc != SQLITE_OK){
+        cout << "SQL ERROR: " << errorMessage << endl;
+        sqlite3_free(errorMessage);
+    }
+
+    for(int i = 0; i < fileName.size(); i++){
+        if(fileName[i] == patientsFileName){
+            isFileFound = true;
+            break;
+        }
+    }
+
+    if(!isFileFound){
+        cout << "File Not found!!! please try again by pressing any key!!!" << endl;
+        getchar();
+        system("clear");
+        doctorMenu();
+    }
+
+    rc = sqlite3_exec(db, findPatientQuery.c_str(), searchCallback, 0, &errorMessage);
+
+    if(rc != SQLITE_OK){
+        cout << "SQL ERROR: " << errorMessage << endl;
+        sqlite3_free(errorMessage);
+    }
+}
 

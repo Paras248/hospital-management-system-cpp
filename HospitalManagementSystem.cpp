@@ -20,6 +20,7 @@ void adminAddDoctor();
 void doctorMenu();
 void doctorUpdatePatient();
 void searchPatient();
+void hospitalScreen();
 
 // database global declaration
 sqlite3 *db;
@@ -84,6 +85,7 @@ class Patient {
                 sqlite3_free(errorMessage);
             }  else {
                 cout << "Patient created successfully";
+                system("clear");
             }
         }
 };
@@ -155,7 +157,7 @@ int main(){
         "pBloodGroup VARCHAR(4) NOT NULL,"
         "pSymptoms vARCHAR(255) NOT NULL,"
         "pMedicines VARCHAR(255) NOT NULL,"
-        "pCheckedBy vARCHAR(100) NOT NULL"
+        "pCheckedBy VARCHAR(100) NOT NULL"
     ");";
 
     string createDoctorTableQuery = "CREATE TABLE IF NOT EXISTS Doctors("
@@ -194,6 +196,8 @@ int main(){
         return (0);
     }
 
+    hospitalScreen();
+
     loginScreen();
     if(user == "admin"){
         adminMenu();
@@ -216,11 +220,28 @@ bool loginUser(string password){
     }
 }
 
+void hospitalScreen(){
+    system("clear");
+    cout << endl << endl;
+    cout << "\t***********************************************************" << endl;
+    cout << "\t*                                                         *" << endl;
+    cout << "\t*                                                         *" << endl;
+    cout << "\t*                                                         *" << endl;
+    cout << "\t*        WELCOME TO HOSPITAL MANAGEMENT SYSTEM            *" << endl;
+    cout << "\t*                                                         *" << endl;
+    cout << "\t*                                                         *" << endl;
+    cout << "\t*                                                         *" << endl;
+    cout << "\t***********************************************************" << endl;
+    sleep(1);
+    
+}
+
 void loginScreen(){
     LOGIN:
         string password;
         system("clear");
-        cout << "Enter password: ";
+        cout << endl << "============== LOGIN ============" << endl;
+        cout << "---> Enter password: ";
         cin >> password;
         if(!loginUser(password)){
             goto LOGIN;
@@ -234,6 +255,7 @@ void loginScreen(){
 
 void adminMenu(){
     int choice;
+    cout << endl << "================== ADMIN MENU ========================" << endl;
     cout << "1. Add Doctor" << endl << "2. Add Patient" << endl << "3. Search Patient" << endl << "4. EXIT" << endl;
     cout <<  "Enter your choice: ";
     cin >> choice;
@@ -273,34 +295,36 @@ void adminAddPatient(){
     string patientsGender;
     
     system("clear");
-
-    cout << "Enter File Name: ";
+    cout << endl << "================== ENTER PATIENT'S DETAILS ==================" << endl;
+    cout << "--> Enter File Name: ";
     cin >> patientsFileName;
 
-    cout << "Enter patient's first name: ";
+    cout << "--> Enter patient's first name: ";
     cin >> patientsFirstName;
 
-    cout << "Enter patient's middle name: ";
+    cout << "--> Enter patient's middle name: ";
     cin >> patientsMiddleName;
 
-    cout << "Enter patient's last name: ";
+    cout << "--> Enter patient's last name: ";
     cin >> patientsLastName;
 
-    cout << "Enter patient's age: ";
+    cout << "--> Enter patient's age: ";
     cin >> patientsAge;
 
-    cout << "Enter patient's gender: ";
+    cout << "--> Enter patient's gender: ";
     cin >> patientsGender;
 
-    cout << "Enter patient's mobile number: ";
+    cout << "--> Enter patient's mobile number: ";
     cin >> patientsMobileNumber;
 
     fflush(stdin);
 
-    cout << "Enter patient's address: ";
+    cout << "--> Enter patient's address: ";
     cin >> patientsAddress;
 
     fflush(stdin);
+
+    
 
     patient = new Patient( patientsMobileNumber, patientsAge, patientsFileName, patientsGender, patientsFirstName, patientsMiddleName, patientsLastName,patientsAddress, "", "", "", "");
     
@@ -352,6 +376,8 @@ void adminAddDoctor(){
 
     cout << "Enter doctors's address: ";
     cin >> doctorsAddress;
+
+    
 
     doctor = new Doctor(doctorsAge, doctorsMobileNumber, doctorsFirstName, doctorsMiddleName, doctorsLastName, doctorsEmail, doctorsAddress, doctorsDegree, doctorsSpecialization);
     

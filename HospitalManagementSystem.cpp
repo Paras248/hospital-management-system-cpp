@@ -5,13 +5,6 @@
     #include <unistd.h>
 #endif
 
-// for getch();
-#ifdef _WIN32
-    #include <conio.h>
-#else
-    #include <curses.h>
-#endif
-
 #include <iostream>
 #include <stdlib.h>
 #include <sqlite3.h>

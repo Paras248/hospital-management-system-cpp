@@ -24,6 +24,8 @@ void searchPatient(int);
 void hospitalScreen();
 void searchAllPatients();
 void searchSpecificPatient(int);
+void searchDoctor();
+
 
 // database global declaration
 sqlite3 *db;
@@ -32,6 +34,7 @@ char *errorMessage = 0;
 // database functions declaration
 static int callback(void*, int, char**, char**);
 static int searchCallback(void*, int, char**, char**);
+static int searchAllDoctorCallback(void*, int, char**, char**);
 
 // class declaration
 class Patient;
@@ -261,7 +264,7 @@ void loginScreen(){
 void adminMenu(){
     int choice;
     cout << endl << "================== ADMIN MENU ========================" << endl;
-    cout << "1. Add Doctor" << endl << "2. Add Patient" << endl << "3. Search Patient" << endl << "4. EXIT" << endl;
+    cout << "1. Add Doctor" << endl << "2. Add Patient" << endl << "3. Search Patient" << endl << "4. Search Doctor" << endl << "5. EXIT" << endl;
     cout <<  "Enter your choice: ";
     cin >> choice;
 
@@ -282,6 +285,13 @@ void adminMenu(){
             break;
         }
         case 4: {
+            system("clear");
+            cout << "================== SEARCH DOCTOR'S RESULT ================= " << endl; 
+            searchDoctor();
+            adminMenu();
+            break;
+        }
+        case 5: {
             sqlite3_close(db);
             exit(1);
         }
@@ -604,5 +614,30 @@ void searchSpecificPatient(int way){
         cout << "SQL ERROR: " << errorMessage << endl;
         sqlite3_free(errorMessage);
     }
+}
+
+void searchDoctor(){
+    string searchDoctorQuery = "SELECT * FROM Doctors";
+    int rc = sqlite3_exec(db, searchDoctorQuery.c_str(), searchAllDoctorCallback, 0, &errorMessage);
+
+    if(rc != SQLITE_OK){
+        cout << "SQL ERROR: " << errorMessage << endl;
+        sqlite3_free(errorMessage);
+    }
+
+}
+
+static int searchAllDoctorCallback(void* data, int argc, char** argv, char** azColName)
+{
+    
+    int i;
+    cout << endl;
+    string col[] = {"First name", "Middle name", "Last name", "Mobile number", "Email", "Age", "Degree", "Specialization", "Address"};
+    for (i = 0; i < argc; i++) {
+        cout << "\t" << col[i] << ": " << (argv[i] ? argv[i] : "NULL") << endl; 
+    }
+  
+    printf("\n");
+    return 0;
 }
 

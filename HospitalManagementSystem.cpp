@@ -15,6 +15,7 @@ using namespace std;
 
 // function declarations
 void loginScreen();
+bool loginUser(string password);
 void adminMenu();
 void adminAddPatient();
 void adminAddDoctor();
